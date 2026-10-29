@@ -1,0 +1,46 @@
+gradle-wrapper.jar
+/.gradle
+/captures/
+/gradlew
+/gradlew.bat
+/local.properties
+GeneratedPluginRegistrant.java
+
+# キーストアは絶対に公開しないこと。
+# 参考: https://docs.flutter.dev/deployment/android#reference-the-keystore-from-the-app
+key.properties
+
+
+# Gradle 関連
+.gradle/
+build/
+
+# ローカル設定ファイル（SDK パスなど）
+local.properties
+
+# ログ・OS のファイル
+*.log
+
+# Android Studio が生成するファイル・フォルダ
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+output.json
+
+# IntelliJ
+*.iml
+.idea/
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# キーストア
+*.jks
+*.keystore
+
+# Google Services（API や Firebase など）
+google-services.json
+
+# Android プロファイリング
+*.hprof

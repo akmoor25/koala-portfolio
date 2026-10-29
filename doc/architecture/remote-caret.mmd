@@ -1,0 +1,9 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  participant A as 端末 A
+  participant DB as Realtime Database
+  participant B as 端末 B
+  A->>DB: presence/{uid} =<br>{generation, lineId, index,<br>name, at}（150ms スロットル）
+  DB-->>B: onValue
+  B->>B: parseRemoteCarets →<br>RemoteCaretOverlay で描画
+  Note over A,DB: 切断時は onDisconnect で自動削除<br/>バックグラウンド移行時は即削除

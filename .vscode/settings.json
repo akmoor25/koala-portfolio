@@ -1,0 +1,27 @@
+{
+  "cSpell.words": [
+    "appdistribution",
+    "Consolas",
+    "CRDT",
+    "Crockford",
+    "logcat",
+    "pressable",
+    "reactivecircus",
+    "rtdb",
+    "Sched",
+    "subosito",
+    "swiftshader",
+    "temurin",
+    "unawaited",
+    "unfocus",
+    "xlarge",
+    "xsmall"
+  ],
+  "java.import.exclude": [
+    "**/node_modules/**",
+    "**/.metadata/**",
+    "**/archetype-resources/**",
+    "**/META-INF/maven/**",
+    "**/packages/**"
+  ]
+}

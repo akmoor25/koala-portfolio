@@ -1,0 +1,16 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  participant Fn1 as 1 回目の実行
+  participant Fn2 as 再試行<br>(60 秒より前)
+  participant Fn3 as 再試行<br>(60 秒より後)
+  participant DB as Realtime Database
+  participant FCM as FCM
+  Fn1->>DB: 予約する (pending、時刻 T)
+  Fn1-xFn1: 強制終了<br>(予約だけが残る)
+  Fn2->>DB: 同じキーを予約する
+  DB-->>Fn2: 新しい pending<br>(別の実行が送信中かもしれない)
+  Fn2-->>Fn2: 例外を投げる<br>(あとで、もう一度)
+  Fn3->>DB: 同じキーを予約する
+  DB-->>Fn3: T から 60 秒を過ぎた<br>pending なので、取り直せる
+  Fn3->>FCM: 送る
+  Fn3->>DB: 予約を sent にする

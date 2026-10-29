@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- OS のダークモードがオフのとき、プロセス起動中の Android Window に適用するテーマ -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <!-- Activity にスプラッシュ画面を表示する。Flutter が最初のフレームを描くと自動で消える -->
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+    <!-- プロセス起動直後から Android Window に適用するテーマ。
+         Flutter UI の初期化中と、実行中の Flutter UI の背後の色を決める。
+
+         Flutter の Android embedding V2 以降でのみ使われる。 -->
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+</resources>

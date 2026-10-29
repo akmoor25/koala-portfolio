@@ -1,0 +1,22 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif", "themeVariables": { "edgeLabelBackground": "#f5f5f5" }, "flowchart": { "wrappingWidth": 300 } }}%%
+flowchart TD
+  Start["イベントを<br>受け取る"] --> Diff{"参加者が増えたか<br>減ったか"}
+  Diff -->|"どちらでもない"| NoChange["終了: no-change"]
+  Diff -->|"はい"| Stale{"発生から 10 分を過ぎたか"}
+  Stale -->|"はい"| StaleEnd["終了: stale-event"]
+  Stale -->|"いいえ"| Closure["参加者が減ったなら、<br>閉鎖の記録を読む"]
+  Closure --> Decide["decide: 種類と<br>宛先を決める"]
+  Decide --> Empty{"通知が 1 件もないか"}
+  Empty -->|"はい"| NoOwner["終了: no-owner<br>か no-change"]
+  Empty -->|"いいえ"| Throttle{"3 秒以内に<br>同じ通知を送ったか"}
+  Throttle -->|"はい"| Throttled["その通知は送らない:<br>throttled"]
+  Throttle -->|"いいえ"| Tokens["宛先のトークンを集め、<br>タイトルとニックネームを読む。<br>送れる端末が無ければ<br>no-tokens で終了"]
+  Tokens --> Reserve["端末ごとに送信を予約 (pending)。<br>古い pending は取り直す"]
+  Reserve --> AllDup{"取れた予約があるか"}
+  AllDup -->|"ない (済み)"| Dup["終了: duplicate。<br>他の実行が送信中なら、<br>例外で再試行"]
+  AllDup -->|"ある"| Send["FCM に送る"]
+  Send --> Result{"結果"}
+  Result -->|"成功"| Done["予約を sent にし、<br>連打の記録を書く: sent"]
+  Result -->|"無効なトークン"| Remove["トークンを消す"]
+  Result -->|"想定外のコード"| Warn["警告のログを残す<br>(再試行しない)"]
+  Result -->|"一時的な失敗"| Retry["その端末の予約を戻し、<br>例外を投げる (再試行)"]

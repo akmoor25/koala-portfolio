@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">旅のしおり</string>
+    <string name="koala_widget_description">旅のしおりの「いま」と「次」の予定を表示します</string>
+    <string name="widget_open_app">旅のしおりを開いてください</string>
+    <string name="widget_now">いま</string>
+    <string name="widget_next">次  %1$s</string>
+    <string name="widget_done">おつかれさまでした</string>
+    <string name="widget_free">移動・自由時間</string>
+    <string name="widget_about">%1$s 頃</string>
+    <string name="notif_channel_name">共同編集</string>
+    <string name="notif_joined_title">共同編集に参加がありました</string>
+    <string name="notif_joined_body">「%1$s」に%2$sが参加しました</string>
+    <string name="notif_joined_body_anonymous">「%1$s」にフレンドが参加しました</string>
+    <string name="notif_left_title">共同編集から脱退がありました</string>
+    <string name="notif_left_body">「%1$s」から%2$sが脱退しました</string>
+    <string name="notif_left_body_anonymous">「%1$s」からフレンドが脱退しました</string>
+    <string name="notif_unavailable_title">しおりにアクセスできなくなりました</string>
+    <string name="notif_deleted_body">%1$sが「%2$s」を削除しました</string>
+    <string name="notif_deleted_body_anonymous">「%1$s」が削除されました</string>
+    <string name="notif_stopped_body">%1$sが「%2$s」の共同編集を停止しました</string>
+    <string name="notif_stopped_body_anonymous">「%1$s」の共同編集が停止されました</string>
+</resources>

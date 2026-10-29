@@ -1,0 +1,155 @@
+# Android の APK を作る（リリースビルド：`--release --flavor production`）。
+# 署名はデバッグ用の鍵（android/app/key.properties が無いとき、build.gradle.kts が自動で選ぶ）。
+# キーストアの Secrets は使わない。
+#
+# 実行方法：タグ `apk-*` を push する（例：`git tag apk-1 && git push origin apk-1`）。
+#   Actions 画面の「Run workflow」から、`main` を選んで手動で実行することもできる。
+name: Build APK
+
+on:
+  push:
+    tags: ["apk-*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    outputs:
+      artifact: ${{ steps.meta.outputs.artifact }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: "3.47.2"
+          channel: stable
+          cache: true
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      # Gradle の依存とラッパーのキャッシュ。保存するのは既定ブランチ（main）の実行だけで、
+      # タグの実行は、それを読む（android-build.yml が保存する）。
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          add-job-summary: never
+
+      - run: flutter pub get
+
+      - name: Test before building
+        run: flutter test
+
+      - name: Name the build
+        id: meta
+        run: |
+          version="$(sed -n 's/^version:[[:space:]]*//p' pubspec.yaml | tr -d '\r')"
+          short="$(git rev-parse --short=8 HEAD)"
+          name="koala-portfolio-${version/+/-b}-${short}"
+          {
+            echo "version=$version"
+            echo "short=$short"
+            echo "name=$name"
+            echo "artifact=$name"
+          } >> "$GITHUB_OUTPUT"
+
+      # コミットのハッシュをアプリ内（「このアプリについて」）に入れる。
+      - name: Build APK
+        run: |
+          flutter build apk --release --flavor production \
+            --dart-define=GIT_COMMIT="${{ steps.meta.outputs.short }}"
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-production-release.apk \
+            "dist/${{ steps.meta.outputs.name }}.apk"
+
+      # 通知の文言は、名前（title_loc_key / body_loc_key）でしか参照されないため、リソースの縮小で消えやすい。
+      # サーバーが送るキーが、すべて APK に残っていることを確かめる（android/app/src/main/res/raw/keep_notifications.xml）。
+      - name: Check the notification strings in the APK
+        run: |
+          aapt2="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)aapt2"
+          "$aapt2" dump resources "dist/${{ steps.meta.outputs.name }}.apk" > resources.txt
+          missing=0
+          for key in $(grep -oE '"notif_[a-z_]+"' functions/src/payload.ts | tr -d '"' | sort -u); do
+            if ! grep -qE "string/${key}[[:space:]]*\$" resources.txt; then
+              echo "::error::APK に通知の文言がありません: ${key}"
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+      - name: Checksum and manifest
+        working-directory: dist
+        run: |
+          sha256sum "${{ steps.meta.outputs.name }}.apk" > "${{ steps.meta.outputs.name }}.apk.sha256"
+          cat > build-manifest.json <<EOF
+          {
+            "app": "koala-portfolio",
+            "version": "${{ steps.meta.outputs.version }}",
+            "commit": "$(git rev-parse HEAD)",
+            "flutter": "$(flutter --version | head -1)",
+            "java": "17",
+            "signing": "debug keystore (no release key is used)",
+            "builtAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "run": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
+          EOF
+          {
+            echo "## APK"
+            echo
+            echo "- file: \`${{ steps.meta.outputs.name }}.apk\`"
+            echo "- size: $(du -h "${{ steps.meta.outputs.name }}.apk" | cut -f1)"
+            echo "- sha256: \`$(cut -d' ' -f1 "${{ steps.meta.outputs.name }}.apk.sha256")\`"
+            echo "- commit: \`$(git rev-parse HEAD)\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 公開・配布用に 90 日間残す。ローカルにも必ず保存する。
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.meta.outputs.name }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 90
+
+  # 作った APK が起動直後に落ちないことを、エミュレータで確かめる。
+  smoke:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ needs.build.outputs.artifact }}
+          path: dist
+
+      # エミュレータの高速化（KVM）を有効にする。
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Install, launch, check
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
+          script: bash tool/ci/smoke_apk.sh "$(ls dist/*.apk)" smoke
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: smoke-${{ needs.build.outputs.artifact }}
+          path: smoke/
+          if-no-files-found: ignore
+          retention-days: 14

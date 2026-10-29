@@ -1,0 +1,14 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  actor User as ユーザー
+  participant Owner as オーナーのアプリ
+  participant DB as Realtime Database
+  participant Fn as onMembersChange
+  User->>Owner: 新規作成でタイトルを入力し、<br>作成を実行
+  Owner-->>User: 作成ダイアログを閉じる<br>(保存完了は待たない)
+  Owner->>DB: しおり・オーナーのメンバー登録<br>(値は true)・userLeaflets を<br>1 回の更新で書く
+  DB-->>Owner: 作成完了
+  DB-)Owner: 一覧の購読更新<br>新しいしおりが届く
+  Owner-)User: 一覧にしおりを表示
+  DB-)Fn: メンバー変更イベント<br>before は無い、<br>after は オーナーだけ
+  Note over Fn: 参照: 2.2 共通シーケンス<br>no-change: 通知しない

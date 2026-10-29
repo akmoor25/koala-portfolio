@@ -1,0 +1,11 @@
+"notif_joined_title" = "Someone joined";
+"notif_joined_body" = "%2$@ joined \"%1$@\"";
+"notif_joined_body_anonymous" = "A friend joined \"%1$@\"";
+"notif_left_title" = "Someone left";
+"notif_left_body" = "%2$@ left \"%1$@\"";
+"notif_left_body_anonymous" = "A friend left \"%1$@\"";
+"notif_unavailable_title" = "You can no longer access the trip";
+"notif_deleted_body" = "%1$@ deleted \"%2$@\"";
+"notif_deleted_body_anonymous" = "\"%1$@\" was deleted";
+"notif_stopped_body" = "%1$@ stopped shared editing of \"%2$@\"";
+"notif_stopped_body_anonymous" = "Shared editing of \"%1$@\" was stopped";

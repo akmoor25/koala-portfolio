@@ -1,0 +1,5 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.akmoor25.koala_portfolio">
+    <!-- ブレークポイントやホットリロードのため、Flutter が実行中のアプリと通信するのに必要。 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+</manifest>

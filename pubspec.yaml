@@ -1,0 +1,75 @@
+name: koala
+description: A new Flutter application.
+
+# pub.dev への誤公開を防ぐ。
+publish_to: "none"
+
+# バージョン名+ビルド番号。flutter build の --build-name / --build-number で上書きできる。
+# Android では versionName / versionCode、iOS では CFBundleShortVersionString / CFBundleVersion になる。
+# 参考: https://developer.android.com/studio/publish/versioning
+version: 1.0.0+12
+
+environment:
+  sdk: ">=3.13.2 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  intl:
+  logger:
+  provider:
+  firebase_core:
+  firebase_auth:
+  firebase_database:
+  auto_size_text:
+  flutter_quill:
+  url_launcher:
+  bubble:
+  google_fonts:
+  stack_trace:
+  scrollable_positioned_list:
+  home_widget: ^0.10.0
+  flutter_secure_storage: ^11.2.0
+  package_info_plus: ^10.2.1
+  crypto: ^3.0.7
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^7.4.2
+  timezone: ^0.11.1
+  flutter_timezone: ^5.1.1
+  firebase_crashlytics: ^5.4.0
+  device_info_plus: ^13.3.0
+  firebase_messaging: ^16.7.0
+  characters: ^1.4.1
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.14.4
+  flutter_lints:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+# pubspec の詳細: https://dart.dev/tools/pub/pubspec
+
+# 以下は Flutter 固有の設定。
+flutter:
+  # Material Icons フォントを同梱する。
+  uses-material-design: true
+
+  # lib/l10n の ARB から、翻訳のクラスを生成する（生成物はコミットする）。
+  generate: true
+
+  # 同梱するアセット。
+  assets:
+    - assets/act_icons/
+    - assets/licenses/
+    - assets/app_icon/app_icon.png
+
+# flutter_launcher_icons の設定。
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon/app_icon.png"

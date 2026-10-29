@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Trip Itinerary</string>
+    <string name="koala_widget_description">Shows the current and the next plans of your trip</string>
+    <string name="widget_open_app">Open Trip Itinerary</string>
+    <string name="widget_now">Now</string>
+    <string name="widget_next">Next  %1$s</string>
+    <string name="widget_done">That\'s a wrap!</string>
+    <string name="widget_free">Travel or free time</string>
+    <string name="widget_about">%1$s ≈</string>
+    <string name="notif_channel_name">Shared editing</string>
+    <string name="notif_joined_title">Someone joined</string>
+    <string name="notif_joined_body">%2$s joined \"%1$s\"</string>
+    <string name="notif_joined_body_anonymous">A friend joined \"%1$s\"</string>
+    <string name="notif_left_title">Someone left</string>
+    <string name="notif_left_body">%2$s left \"%1$s\"</string>
+    <string name="notif_left_body_anonymous">A friend left \"%1$s\"</string>
+    <string name="notif_unavailable_title">You can no longer access the trip</string>
+    <string name="notif_deleted_body">%1$s deleted \"%2$s\"</string>
+    <string name="notif_deleted_body_anonymous">\"%1$s\" was deleted</string>
+    <string name="notif_stopped_body">%1$s stopped shared editing of \"%2$s\"</string>
+    <string name="notif_stopped_body_anonymous">Shared editing of \"%1$s\" was stopped</string>
+</resources>

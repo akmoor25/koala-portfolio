@@ -1,0 +1,94 @@
+name: CI
+
+# 分数の節約のため、役割ごとにワークフローを分け、関係する変更のときだけ動かす。
+# - 文書（doc/。法務文書の doc/legal/ を含む。*.md）とルールだけの変更では、このワークフロー（整形、解析、テスト）は動かさない。
+# - 秘密情報の検査と、文書の検査（リンク、公開する法務文書 doc/legal/ の中身）は、light.yml が、すべての push で動かす。
+#   法務文書の検査をここ（テスト）に置くと、文書の変更で壊れた検査に、後の無関係なコミットで気づくことになるため。
+# - ルールのテストは rules.yml、通知の関数のテストは functions.yml、Android のビルドは android-build.yml が、
+#   関係する変更のときだけ動かす。
+# 除外を変えるときは、下の push と pull_request の両方を合わせる。
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "doc/**"
+      - "functions/**"
+      - "database.rules.json"
+      - "test/rules.test.js"
+      - "package.json"
+      - "package-lock.json"
+      - "firebase.json"
+      - "tool/admin/**"
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "doc/**"
+      - "functions/**"
+      - "database.rules.json"
+      - "test/rules.test.js"
+      - "package.json"
+      - "package-lock.json"
+      - "firebase.json"
+      - "tool/admin/**"
+
+# 読み取りだけにする。書き込みが要るジョブは、そのジョブで個別に付ける。
+permissions:
+  contents: read
+
+# 同じブランチで続けて push したら、古い実行は止める（実行時間の節約）。
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flutter:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: "3.47.2"
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      # Effective Dart の既定（80 桁）に整形されていること。
+      - run: dart format --output=none --set-exit-if-changed .
+
+      # 画面の文言は ARB に置く。日本語の直書きと、翻訳の漏れ（en と ja の不一致）を検査する。
+      - name: Check the localization
+        run: |
+          python3 tool/ci/check_l10n.py
+          flutter gen-l10n
+          git diff --exit-code -- lib/l10n
+
+      # ボタンは AppButton、色はトークン（Theme.of(context).koala）を通す。直書きを検査する。
+      - name: Check the design components
+        run: python3 tool/ci/check_design.py
+
+      # 指摘は info も含めて 0 件を保つ（Effective Dart のリントを強制する）。
+      - run: flutter analyze --fatal-infos
+
+      - name: Test with coverage
+        run: flutter test --coverage --file-reporter json:test-report.json
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          [ -f coverage/lcov.info ] || exit 0
+          awk -F: '/^LF:/{f+=$2} /^LH:/{h+=$2} END{printf "## Coverage\n\n- lines: %d / %d (%.1f%%)\n", h, f, 100*h/f}' coverage/lcov.info >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: test-results
+          path: |
+            test-report.json
+            coverage/lcov.info
+          if-no-files-found: ignore
+          retention-days: 14

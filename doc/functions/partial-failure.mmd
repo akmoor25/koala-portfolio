@@ -1,0 +1,15 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  participant Fn as onMembersChange
+  participant DB as Realtime Database
+  participant FCM as FCM
+  Fn->>DB: bob の端末と carol の端末を予約する
+  Fn->>FCM: sendEach (bob と carol)
+  FCM-->>Fn: carol は成功、<br>bob は一時的な失敗
+  Fn->>DB: bob の予約だけを戻す
+  Fn-->>Fn: 例外を投げる<br>(連打の記録と閉鎖の記録は、<br>まだ残す)
+  Note over Fn: retry が true なので、<br>同じイベントで、もう一度動く
+  Fn->>DB: bob の端末は予約できる、<br>carol の端末はすでにある
+  Fn->>FCM: sendEach (bob だけ)
+  FCM-->>Fn: 成功
+  Fn->>DB: 連打の記録を書き、<br>閉鎖の記録を消す

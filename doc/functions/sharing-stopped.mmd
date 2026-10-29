@@ -1,0 +1,15 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  actor User as オーナー
+  participant Owner as オーナーのアプリ
+  participant DB as Realtime Database
+  participant Fn as onMembersChange
+  User->>Owner: 共同編集の設定で<br>停止を選び、確認する
+  Owner->>DB: 読む: leafletMembers/{lid}<br>(参加者を知る)
+  DB-->>Owner: 参加者の UID 一覧
+  Owner->>DB: 1 回の更新で、あいことばと<br>shared を消し、<br>閉鎖の記録 (stopped、<br>タイトル、時刻) を書き、<br>全参加者のメンバー登録と<br>userLeaflets を消す
+  Note over DB: ルールは、オーナーかどうかを<br>変更前の ownerUid で確かめる
+  DB-->>Owner: 更新完了
+  Owner-->>User: 共同編集が無効の画面を表示
+  DB-)Fn: メンバー変更イベント<br>before は オーナーと参加者たち、<br>after は オーナーだけ
+  Note over Fn: 参照: 2.2 共通シーケンス<br>stopped: 消えた参加者全員へ通知

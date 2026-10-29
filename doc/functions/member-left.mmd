@@ -1,0 +1,14 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  actor User as フレンド
+  participant Friend as フレンドのアプリ
+  participant DB as Realtime Database
+  participant Fn as onMembersChange
+  User->>Friend: しおりのメニューで<br>脱退を選び、確認する
+  Friend-->>User: 確認ダイアログとメニューを閉じる<br>(保存完了は待たない)
+  Friend->>DB: leafletMembers/{lid}/{friend} と<br>userLeaflets の印を消す
+  DB-->>Friend: 更新完了
+  DB-)Friend: 一覧の購読更新<br>脱退したしおりが消える
+  Friend-)User: 一覧からしおりを外す
+  DB-)Fn: メンバー変更イベント<br>before は オーナーと friend、<br>after は オーナーだけ
+  Note over Fn: 参照: 2.2 共通シーケンス<br>left: オーナーへ通知

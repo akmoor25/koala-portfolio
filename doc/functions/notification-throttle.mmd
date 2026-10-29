@@ -1,0 +1,12 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  participant Fn as onMembersChange
+  participant DB as Realtime Database
+  Note over Fn: 1 回目の参加
+  Fn->>DB: notificationThrottle/<br>{lid}_{friend}_joined を読む (なし)
+  Fn->>DB: 送信後に、時刻を書く
+  Note over Fn: 2 秒後の参加
+  Fn->>DB: notificationThrottle/<br>{lid}_{friend}_joined を読む (2 秒前)
+  Note over Fn: 3 秒より新しいので送らない<br>(throttled)
+  Note over Fn: 3 秒以上あとの参加
+  Fn->>DB: 時刻が古いので送る

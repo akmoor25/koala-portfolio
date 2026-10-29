@@ -1,0 +1,2 @@
+# シェルスクリプトは、Windows（core.autocrlf=true）で取り出しても LF にする（CRLF だと bash で動かない）。
+*.sh text eol=lf

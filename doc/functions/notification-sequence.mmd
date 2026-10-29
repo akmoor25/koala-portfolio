@@ -1,0 +1,53 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  participant Fn as onMembersChange
+  participant DB as Realtime Database
+  participant Auth as Firebase<br>Authentication
+  participant FCM as FCM
+  participant Device as 通知先の端末
+  DB-)Fn: メンバー変更イベント<br>before・after・イベント ID・時刻
+  break 参加者の増減なし、または<br>イベントが 10 分より古い
+    Note over Fn: no-change または stale-event で終了<br>データベースを読まず、送らない
+  end
+  opt 参加者が減った場合
+    Fn->>DB: leafletClosures/{lid} を読む
+    DB-->>Fn: 閉鎖の記録 (種類・タイトル・時刻)<br>または、記録なし
+  end
+  Note over Fn: 2.1 の表で種類と宛先を決める
+  opt 閉鎖の記録が 5 分より古い場合
+    Fn->>DB: 古い閉鎖の記録を消す
+    DB-->>Fn: 削除完了
+  end
+  break 通知の種類・宛先が<br>決まらない場合
+    Note over Fn: no-owner または no-change で終了
+  end
+  Note over Fn,DB: 以下は送信可能な基本経路<br>途中で送らない条件は 2.1 のフローを参照
+  loop 通知候補ごと
+    Fn->>DB: 連打の記録・宛先の<br>端末のトークンを読む
+    DB-->>Fn: 送信可・端末のトークン一覧
+    alt 参加・脱退
+      Fn->>DB: leaflets/{lid}/title を読む
+      DB-->>Fn: しおりのタイトル
+    else 共同編集の停止・しおりの削除
+      Note over Fn: タイトルは閉鎖の記録から取得
+    end
+    Fn->>Auth: 操作した人の表示名を読む
+    Auth-->>Fn: 表示名 (未設定なら名前なし)
+    Note over Fn: 名前・タイトルを整え、<br>通知の文言と宛先を組み立てる
+  end
+  loop 送信対象の端末ごと
+    Fn->>DB: notificationLog/{イベント ID}/{端末}<br>をトランザクションで予約する
+    DB-->>Fn: 予約取得 (pending)
+  end
+  Fn->>FCM: sendEach (予約できた端末だけ)
+  FCM-->>Fn: 端末ごとの受付結果 (成功)
+  par 送信後の記録
+    Fn->>DB: 予約を sent にし、<br>連打の時刻を記録する
+    DB-->>Fn: 記録完了
+    opt 停止・削除の閉鎖の記録を使った場合
+      Fn->>DB: 閉鎖の記録を消す
+      DB-->>Fn: 削除完了
+    end
+  and 非同期の Push 配信
+    FCM-)Device: 通知の種類に応じたメッセージ<br>(端末の言語で表示)
+  end
