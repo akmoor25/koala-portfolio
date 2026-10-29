@@ -1,0 +1,13 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  participant Fn1 as 1 回目の実行
+  participant Fn2 as 2 回目の実行
+  participant DB as Realtime Database
+  participant FCM as FCM
+  Fn1->>DB: notificationLog/{id}/{端末}<br>を pending で<br>トランザクション予約する
+  DB-->>Fn1: 予約できた
+  Fn1->>FCM: 送る
+  Fn1->>DB: 予約を sent にする
+  Fn2->>DB: 同じキーを予約する
+  DB-->>Fn2: すでにある<br>(sent なので予約できない)
+  Note over Fn2: 予約できた端末が 0 件なので、<br>送らず duplicate で終了

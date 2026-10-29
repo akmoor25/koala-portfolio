@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# push の前に tool/check.sh を実行する。失敗したら push を止める。
+#
+# 有効にする: git config core.hooksPath .githooks
+# 1 回だけ飛ばす: git push --no-verify
+#
+# CI（ci.yml）と同じく、文書（doc/。法務文書の doc/legal/ を含む。*.md）や関数・ルールだけの変更のときは、検査を飛ばす。
+# 除外を変えるときは、.github/workflows/ci.yml の push・pull_request と合わせる。
+# SHA の差分は検査の要否だけに使う。tool/check.sh が検査するのは現在の作業ディレクトリ。
+set -euo pipefail
+
+zero="0000000000000000000000000000000000000000"
+needs_check=false
+
+while read -r _local_ref local_sha _remote_ref remote_sha; do
+  # 削除の push は、検査しない。
+  [ "$local_sha" = "$zero" ] && continue
+  # 新しいブランチは、比べる相手が無いため、検査する。
+  if [ "$remote_sha" = "$zero" ] || ! git cat-file -e "$remote_sha" 2>/dev/null; then
+    needs_check=true
+    continue
+  fi
+  if git diff --name-only "$remote_sha" "$local_sha" |
+    grep -Ev '(^doc/|\.md$|^\.agents/|^functions/|^database\.rules\.json$|^test/rules\.test\.js$|^package(-lock)?\.json$|^firebase\.json$|^tool/admin/)' \
+      >/dev/null; then
+    needs_check=true
+  fi
+done
+
+if [ "$needs_check" = false ]; then
+  echo "pre-push: Dart の検査が要る変更が無いため、飛ばします。"
+  exit 0
+fi
+
+echo "pre-push: CI と同じ検査を行います（飛ばすときは git push --no-verify）。"
+exec bash "$(git rev-parse --show-toplevel)/tool/check.sh"

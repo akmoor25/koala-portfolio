@@ -1,0 +1,3 @@
+"CFBundleDisplayName" = "Trip Itinerary";
+"CFBundleName" = "Trip Itinerary";
+"NSCameraUsageDescription" = "Scans QR codes to join a shared trip.";

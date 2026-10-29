@@ -1,0 +1,18 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  actor User as フレンド
+  participant Friend as フレンドのアプリ
+  participant Auth as Firebase<br>Authentication
+  participant DB as Realtime Database
+  participant Fn as onMembersChange
+  User->>Friend: ID・あいことば・名前を入力し、<br>参加を実行
+  Friend->>Auth: ニックネームを表示名として保存<br>(参加の前)
+  Auth-->>Friend: 保存完了
+  Friend->>DB: 自分のメンバー登録を確認
+  DB-->>Friend: 未参加
+  Friend->>DB: leafletMembers/{lid}/{friend}<br>にあいことばのハッシュ、<br>userLeaflets に印を書く
+  Note over DB: ルールが、ハッシュが<br>leafletSecrets と一致するかを確かめる
+  DB-->>Friend: 更新完了
+  Friend-->>User: 一覧に戻り、参加完了を表示
+  DB-)Fn: メンバー変更イベント<br>before は オーナーだけ、<br>after は オーナーと friend
+  Note over Fn: 参照: 2.2 共通シーケンス<br>joined: オーナーへ通知

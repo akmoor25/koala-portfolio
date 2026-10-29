@@ -1,0 +1,7 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif", "themeVariables": { "edgeLabelBackground": "#f5f5f5" }, "flowchart": { "wrappingWidth": 300 } }}%%
+flowchart LR
+  Marks["MarksModel<br/>旅程を受信"] --> Enc["encodePayload<br>現在以降の工程を<br>最大 20 件"]
+  Enc -->|saveWidgetData| Store[("App Group /<br/>SharedPreferences")]
+  Enc -->|boundaryTimes| Sched["更新時刻の予約<br/>（Android）"]
+  Store --> iOS["WidgetKit<br/>TimelineProvider"]
+  Store --> And["Glance<br/>GlanceAppWidget"]

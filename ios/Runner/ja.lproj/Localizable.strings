@@ -1,0 +1,11 @@
+"notif_joined_title" = "共同編集に参加がありました";
+"notif_joined_body" = "「%1$@」に%2$@が参加しました";
+"notif_joined_body_anonymous" = "「%1$@」にフレンドが参加しました";
+"notif_left_title" = "共同編集から脱退がありました";
+"notif_left_body" = "「%1$@」から%2$@が脱退しました";
+"notif_left_body_anonymous" = "「%1$@」からフレンドが脱退しました";
+"notif_unavailable_title" = "しおりにアクセスできなくなりました";
+"notif_deleted_body" = "%1$@が「%2$@」を削除しました";
+"notif_deleted_body_anonymous" = "「%1$@」が削除されました";
+"notif_stopped_body" = "%1$@が「%2$@」の共同編集を停止しました";
+"notif_stopped_body_anonymous" = "「%1$@」の共同編集が停止されました";

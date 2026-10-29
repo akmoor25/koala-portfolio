@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy | Trip Itinerary</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<p class="lang"><a href="privacy.ja.html" hreflang="ja" lang="ja">日本語</a> ・ <a href="terms.en.html">Terms of Use</a></p>
+
+<h1>Privacy Policy</h1>
+<p class="meta">App: Trip Itinerary (development code name: koala)<br>
+Version 1 ・ Effective date: October 18, 2026</p>
+
+<div class="note">
+<p>This document explains the data handled by an app built as a portfolio. It has not been reviewed by a legal professional.</p>
+<p>This page is provided on GitHub Pages, and <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's Privacy Statement</a> applies to visits to this page.</p>
+<p>Anonymous accounts are deleted automatically once they are 30 days old or older, and the trips those accounts created are deleted with them.</p>
+</div>
+
+<p>The operator is an individual developer (GitHub: <a href="https://github.com/akmoor25">akmoor25</a>). This document describes facts confirmed from the app's code and settings, and Google's published explanations.</p>
+
+<h2 id="collect">1. Information we collect</h2>
+
+<h3>1.1 Stored only on your device</h3>
+<p>The following is stored only on your device and is not sent to the operator.</p>
+<ul>
+<li><strong>The passphrase in plain text</strong>: the passphrase chosen by the owner who turns a trip into a shared trip. It is kept in the device's encrypted storage (Android Keystore, iOS Keychain) so that the QR code can be shown again later. It is lost when you change devices.</li>
+<li><strong>A cache of your trips</strong>: trips, plans and notes you have read stay on the device so you can read them offline.</li>
+<li><strong>Home screen widget data</strong>: the trip title and up to 20 upcoming plans (title, remark, start and end times, time zone, transport icon). It is stored so the widget can display it without opening the app.</li>
+<li><strong>A font cache</strong>, and sign-in state and similar data that Firebase creates on the device.</li>
+</ul>
+
+<h3>1.2 Sent to servers</h3>
+<p>When you tap "Get started", the app connects to Firebase, which is provided by Google. You don't need to register an account. Crashlytics reporting and the automatic setup of FCM are turned off in the app's settings until you tap "Get started". The following information is sent to servers.</p>
+<div class="table-wrap">
+<table>
+<colgroup>
+<col style="width: 160px;">
+</colgroup>
+<thead>
+<tr><th>Information</th><th>What it is, and when it is sent</th></tr>
+</thead>
+<tbody>
+<tr><td>Anonymous user ID</td><td>A random string that Firebase Authentication creates for each device when you tap "Get started". We don't collect your name, email address or phone number.</td></tr>
+<tr><td>Nickname</td><td>You enter it when you turn on shared editing, join a trip, or from the menu. The default is the device model (for example, Pixel 10a). A name you gave to your device is not used. It is stored in Firebase Authentication.</td></tr>
+<tr><td>Trips</td><td>Title, cover emoji, color, period and time zones, the owner's anonymous ID, whether shared editing is on, and the creation time. The same applies when you add the sample trips.</td></tr>
+<tr><td>Plans</td><td>Title, remark, link, date and time, time zone, and transport icon.</td></tr>
+<tr><td>Notes</td><td>The text body (rich text).</td></tr>
+<tr><td>Cursors</td><td>While you have a shared note open: the time, the first character of your nickname, and the cursor position.</td></tr>
+<tr><td>Member records</td><td>For each trip, the anonymous IDs of its participants (a participant's entry holds the passphrase hash). An index of each user's trips (by anonymous ID) is also stored.</td></tr>
+<tr><td>Passphrase hash</td><td>The passphrase in plain text is never sent. Only a value is stored, made by applying SHA-256 10,000 times with the trip ID as a salt.</td></tr>
+<tr><td>Notification destination</td><td>When you allow notifications, this device's FCM token, the OS type (android or ios) and a time are stored, tied to your anonymous ID.</td></tr>
+<tr><td>Closure record</td><td>When an owner deletes a trip or stops shared editing, the kind of action, the trip title and a time are written, so participants get the right notification.</td></tr>
+<tr><td>Notification send records</td><td>A record to avoid sending the same notification twice (per event and per hash of the device token), and a time used to suppress rapid repeats.</td></tr>
+<tr><td>Notification content</td><td>The kind, the trip ID, the trip title and the nickname are sent to the destination device through FCM (and Apple's APNs on iOS). The server does not store the content of notifications.</td></tr>
+<tr><td>Problem reports</td><td>When an error occurs in the app, or the app crashes, a report is sent to Firebase Crashlytics. The app adds the error details, the stack trace and the commit the app was built from. The Crashlytics SDK automatically adds the device model, OS, app version, and per-installation identifiers (Crashlytics Installation UUID, Firebase installation ID). Information you enter, such as your trips, is not sent.</td></tr>
+<tr><td>Server logs</td><td>Records of running the notification and cleanup functions (event ID, trip ID, counts, error codes, and for unexpected errors the anonymous user ID) remain in Google Cloud logs. Nicknames and trip titles are not written to them.</td></tr>
+<tr><td>Connection data</td><td>For security, Google's services handle IP addresses and user agents (Firebase Authentication keeps logged IP addresses for a few weeks, according to Google).</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>1.3 What we don't collect</h3>
+<ul>
+<li>Your name, email address, phone number, location, contacts or advertising ID.</li>
+<li>Usage analytics (such as Firebase Analytics).</li>
+<li>Camera images. The camera is used only to scan QR codes. Images are neither saved nor sent.</li>
+</ul>
+
+<h3>1.4 Other network connections</h3>
+<ul>
+<li>Communication with Firebase (Authentication, Realtime Database, Cloud Messaging, Crashlytics).</li>
+<li>Fetching fonts: the first time the app shows its text font (BIZ UDPGothic), it downloads it from Google's font delivery service. Google receives connection data such as your IP address.</li>
+<li>Links in plans and in notes are opened in another app (such as a browser) only when you tap them.</li>
+<li>When you open this document, the in-app browser (Custom Tabs on Android, SFSafariViewController on iOS) connects to GitHub Pages. Links in the document (the operator's GitHub, Firebase's explanation) are opened only when you tap them.</li>
+</ul>
+
+<h2 id="purpose">2. How we use the information</h2>
+<p>We use the information in chapter 1 only for the purposes below.</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Purpose</th><th>Information used</th></tr>
+</thead>
+<tbody>
+<tr><td>To save trips, plans and notes, and to let the members of the same trip view and edit them together.</td><td>Trips, Plans, Notes, Member records</td></tr>
+<tr><td>To show who is editing where in a shared note.</td><td>Cursors (including the first character of the nickname)</td></tr>
+<tr><td>To tell a trip's owner and participants apart, and to let only its members read and write it.</td><td>Anonymous user ID, Member records</td></tr>
+<tr><td>To check the passphrase when someone joins a trip.</td><td>Passphrase hash</td></tr>
+<tr><td>To send push notifications about joining, leaving, deleting a trip, and stopping shared editing.</td><td>Notification destination, Nickname, Trips (title), Closure record, Notification content</td></tr>
+<tr><td>To avoid sending the same notification twice, and to suppress rapid repeats.</td><td>Notification send records</td></tr>
+<tr><td>To let you read offline, to show your plans in the home screen widget, to show the QR code again later, and to display the app's font.</td><td>What is stored only on your device (the cache of your trips, home screen widget data, the passphrase in plain text, the font cache)</td></tr>
+<tr><td>To find and fix the cause of problems.</td><td>Problem reports</td></tr>
+<tr><td>To check that the notification and cleanup functions ran correctly, and to investigate problems.</td><td>Server logs</td></tr>
+<tr><td>To delete data that is no longer used and free up space (the daily cleanup, automatic deletion of anonymous accounts).</td><td>Trips, Plans, Notes, Member records, Passphrase hash, Cursors, Notification send records, Closure record, Notification destination (FCM token), Anonymous user ID</td></tr>
+</tbody>
+</table>
+</div>
+<p>Connection data (such as IP addresses) is handled by Google's services for security (the last row in 1.2). The operator does not use it for the purposes above.</p>
+<p>We don't use it beyond these purposes, and we don't use it for advertising or marketing.</p>
+
+<h2 id="storage">3. Where it is stored, and outside services</h2>
+<p>Storing and processing the data is entrusted to Firebase and Google Cloud, which Google provides.</p>
+<ul>
+<li>Realtime Database (trips, plans, notes and so on) and Cloud Functions (notifications and cleanup): <strong>Asia Pacific (Singapore, <code>asia-southeast1</code>)</strong>.</li>
+<li>Firebase Authentication, Firebase Cloud Messaging and Firebase Crashlytics: <strong>the operator has not chosen a location</strong>. The data is stored in locations that Google operates. It is not necessarily in Japan or only in Asia.</li>
+<li>Notifications on iOS pass through Apple's APNs.</li>
+<li>This document is provided on GitHub Pages.</li>
+</ul>
+<p>For how Google handles data, see <a href="https://firebase.google.com/support/privacy">Privacy and Security in Firebase</a>.</p>
+
+<h2 id="third-party">4. Provision to third parties</h2>
+<p>The operator does not provide your information to third parties for advertising or sale, except:</p>
+<ul>
+<li>when disclosure is required by law.</li>
+</ul>
+<p>By the design of the app, the following people can see some information.</p>
+<ul>
+<li><strong>Other members of the same trip</strong>: the trip, plans, notes, and members' cursors (the first character of the nickname). Members' anonymous IDs are also visible through the cursor records.</li>
+<li><strong>The owner</strong>: the anonymous IDs of the members of their trips. A notification to the owner shows the nickname of the member who joined or left. A notification to participants shows the nickname of the owner who deleted the trip or stopped shared editing.</li>
+<li><strong>The operator</strong>: can see the stored data in the Firebase console.</li>
+</ul>
+<p>A QR code contains the trip ID and the passphrase. Anyone who scans it can join. Show it only to people you trust.</p>
+
+<h2 id="retention">5. Retention and deletion</h2>
+<div class="table-wrap">
+<table>
+<colgroup>
+<col style="width: 160px;">
+</colgroup>
+<thead>
+<tr><th>Information</th><th>How long it is kept, and when it is deleted</th></tr>
+</thead>
+<tbody>
+<tr><td>Trips, plans, notes, member records, passphrase hashes, cursors</td><td>A trip is kept until the owner deletes it, until the owner's anonymous account is deleted, or until all data is deleted when the app is discontinued.<br>An anonymous account is deleted by Firebase's automatic cleanup once it is 30 days old or older (this is based on the days since the account was created, not on when it was last used). When an account is deleted, a cleanup that runs every day at 4:00 (Japan time) deletes the trips that account owned, together with their related data. It deletes them even if participants remain. <strong>So even a trip that is in use can disappear about 30 days after its owner's account was created.</strong> The cleanup does not delete a trip just because it is old.<br>When a participant's account is deleted automatically, that participant's member record (anonymous ID) inside other people's trips remains until those trips are deleted.<br>A cursor disappears when the app goes to the background or the connection is lost.</td></tr>
+<tr><td>Anonymous user ID, nickname</td><td>Deleted automatically by Firebase's automatic cleanup once the account is 30 days old or older. Before that, you can delete them yourself with "Delete account and data" in the menu (chapter 6). After deletion, it takes up to 180 days for the data to be removed from Google's systems, including backups (according to Google).</td></tr>
+<tr><td>FCM token</td><td>It is deleted automatically when sending shows it is no longer valid. "Delete account and data" removes all tokens on the server and discards this device's FCM token. After the anonymous account is gone, the cleanup deletes it.</td></tr>
+<tr><td>Closure record</td><td>A function deletes it after deciding on the notification. If shared editing is stopped while no member is in the trip, the notification process does not run, so the record may remain while the trip remains. It is deleted by the cleanup when the trip is deleted.</td></tr>
+<tr><td>Notification send records</td><td>Records that are one day old or older are deleted by the daily cleanup. Because the cleanup runs once a day, they remain for about two days at most.</td></tr>
+<tr><td>Problem reports (Crashlytics)</td><td>Google keeps them for 90 days (stack traces and identifiers). After 90 days, the deletion process starts.</td></tr>
+<tr><td>Server logs (Cloud Logging)</td><td>The Google Cloud default is 30 days.</td></tr>
+<tr><td>Data on your device</td><td>Deleted when you uninstall the app. The passphrase in plain text is also deleted when you delete the trip or stop shared editing. <strong>If the server-side cleanup deletes a trip, the passphrase on the device remains.</strong> The home screen widget data is deleted when you delete that trip or leave it. The cache of trips may remain on the device after "Delete account and data", until you uninstall the app.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>After the app is discontinued</h3>
+<p>When the app is discontinued, we delete everything promptly. We stop the notification and cleanup functions and delete all data in Realtime Database and all anonymous users. If needed, we delete the whole Firebase project. After that, the distributed APK can no longer connect to Firebase, and shared editing and saving notes stop working.</p>
+<p>According to Google, data in Firebase Authentication and FCM is removed from Google's systems, including backups, within 180 days after a deletion request.</p>
+
+<h2 id="control">6. What you can do</h2>
+<ul>
+<li><strong>Delete your account and data</strong>: with "Delete account and data" in the menu, you can delete your anonymous account and your data on the servers. It works in this order:
+<ol>
+<li>All trips you own are deleted (participants lose access to them and receive a deletion notification).</li>
+<li>You leave the trips you joined (the owner receives a leave notification).</li>
+<li>Your trip index and notification destination (FCM token) are removed, and this device's FCM token is discarded.</li>
+<li>Your anonymous user ID and nickname are deleted from Firebase Authentication.</li>
+</ol>
+This can't be undone. Even on the same device, the next time you tap "Get started" you get a new anonymous user ID and can't return to your earlier trips. If a step fails midway, the account is not deleted. Please try again.<br>
+What remains after deletion: plans and notes you wrote in other people's trips (the app doesn't record who wrote them); notification send records (about 2 days at most); problem reports (Google keeps them for 90 days); server logs (30 days by Google Cloud default); the cache on your device (removed when you uninstall the app).</li>
+<li><strong>Leave a trip</strong>: participants can leave a trip. The plans and notes you wrote stay in the trip.</li>
+<li><strong>Delete a trip or stop shared editing</strong>: an owner can delete their own trip or stop shared editing.</li>
+<li><strong>Delete data on your device</strong>: uninstalling the app deletes the data on your device. Data on the servers is not deleted. To delete that as well, first use "Delete account and data".</li>
+<li><strong>If it still isn't deleted</strong>: if deleting the account keeps failing or you can't delete something from the app, contact us at the address in chapter 7.</li>
+</ul>
+<p>What you put in a trip is visible to the other members of that trip. Please do not enter sensitive or important information.</p>
+
+<h2 id="contact">7. Contact</h2>
+<p>Operator: an individual developer (GitHub: <a href="https://github.com/akmoor25">akmoor25</a>)</p>
+<p>Email: <a href="mailto:akmoor25.io@gmail.com">akmoor25.io@gmail.com</a></p>
+
+<h2 id="revision">8. Changes</h2>
+<p>We revise this document when the app or how it is run changes. The revised document is published on this page. The app has no feature to record agreement or to ask for agreement again when the document changes. The revision history is at the end of this page.</p>
+
+<footer>
+<h2 id="history">Revision history</h2>
+<ul>
+<li>Version 1 ・ October 18, 2026: first version.</li>
+</ul>
+</footer>
+</main>
+</body>
+</html>

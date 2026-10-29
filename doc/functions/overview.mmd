@@ -1,0 +1,14 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif", "themeVariables": { "edgeLabelBackground": "#f5f5f5" }, "flowchart": { "wrappingWidth": 300 } }}%%
+flowchart TB
+  App["アプリ<br>(オーナー、フレンド)"] -->|"メンバーの登録を書く"| DB[("Realtime Database")]
+  DB -->|"leafletMembers/{lid}<br>の書き込み前後の値"| Fn["onMembersChange"]
+  Fn -->|"記録を読み書き"| DB
+  Fn -->|"表示名を読む"| Auth["Firebase<br>Authentication"]
+  Fn -->|"sendEach"| FCM["FCM"]
+  FCM --> Device["通知を受ける端末"]
+  Scheduler["Cloud Scheduler<br>毎日 4:00<br>(日本時間)"] --> Cleanup["dailyCleanup"]
+  Cleanup -->|"共通の掃除処理を呼ぶ"| CleanupLogic["cleanup.ts<br>削除計画を作り、<br>実行する"]
+  Admin["管理者の手動ツール<br>tool/admin/cleanup.js"] -->|"既定は確認だけ<br>--apply で削除"| CleanupLogic
+  CleanupLogic -->|"ユーザーの存在を確認"| Auth
+  CleanupLogic -->|"しおり・索引・通知の<br>記録などを読む"| DB
+  CleanupLogic -->|"持ち主不在のしおりと<br>関連データ<br>孤立データ・古い通知の<br>記録などを削除"| DB

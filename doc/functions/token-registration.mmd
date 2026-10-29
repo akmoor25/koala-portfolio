@@ -1,0 +1,23 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  actor User as オーナー<br>またはフレンド
+  participant App as アプリ
+  participant OS as OS と FCM
+  participant DB as Realtime Database
+  User->>App: 共同編集を有効にする<br>または、しおりに参加する
+  Note over App: 設定・参加の保存処理は省略<br>成功した直後に通知の準備を開始
+  App-->>User: 設定または参加の完了を表示
+  App->>OS: 通知の許可状態を確認
+  OS-->>App: 未確認 (初回の経路)
+  App->>OS: 通知の許可を要求
+  OS->>User: 許可ダイアログを表示
+  User-->>OS: 許可する
+  OS-->>App: 許可済み
+  App->>OS: トークンを取る
+  OS-->>App: トークン
+  App->>DB: users/{uid}/fcmTokens/{tokenKey}<br>に token、at、platform を書く<br>(キーはトークンのハッシュ)
+  Note over DB: ルール: 本人だけが書ける。<br>クライアントは読めない
+  DB-->>App: 登録完了
+  OS-)App: トークンの更新<br>(onTokenRefresh)
+  App->>DB: 新しいトークンを登録する
+  DB-->>App: 登録完了

@@ -1,0 +1,23 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  actor User as オーナー
+  participant Owner as オーナーのアプリ
+  participant DB as Realtime Database
+  participant Fn as onMembersChange
+  User->>Owner: しおりのメニューで<br>削除を選び、確認する
+  Owner-->>User: 確認画面とメニューを閉じる<br>(保存完了は待たない)
+  Owner->>DB: leafletMembers/{lid} を読む
+  DB-->>Owner: 参加者の UID 一覧
+  Owner->>DB: 1 回目の更新: しおり、旅程、<br>ノート、あいことばを消し、<br>閉鎖の記録 (deleted、<br>タイトル) を書き、<br>参加者のメンバー登録と<br>userLeaflets を消す
+  DB-->>Owner: 更新完了
+  par アプリ側は通知を待たずに続行
+    Owner->>DB: 2 回目の更新:<br>オーナー自身のメンバー登録を消す
+    DB-->>Owner: 更新完了
+    DB-)Owner: 一覧の購読更新<br>削除したしおりが消える
+    Owner-)User: 一覧からしおりを外す
+  and 非同期の通知処理
+    DB-)Fn: 1 つ目の変更イベント:<br>before は オーナーと参加者、<br>after は オーナーだけ
+    Note over Fn: 参照: 2.2 共通シーケンス<br>deleted: 消えた参加者へ通知
+    DB-)Fn: 2 つ目の変更イベント:<br>before は オーナーだけ、<br>after は無い
+    Note over Fn: 参照: 2.2 共通シーケンス<br>no-change: 通知しない<br>2 つのイベントの処理順は不定
+  end

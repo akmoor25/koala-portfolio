@@ -1,0 +1,61 @@
+# その他
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+
+# `flutter test --coverage` の出力
+/coverage/
+
+# IntelliJ 関連
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# .vscode にはバージョン管理したい起動設定やタスクが入るため、既定では除外しない。
+#.vscode/
+
+# Flutter/Dart/Pub 関連
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# Web 関連
+lib/generated_plugin_registrant.dart
+
+# シンボル化関連
+app.*.symbols
+
+# 難読化関連
+app.*.map.json
+
+# Android Studio がビルド成果物を置く場所
+/android/app/debug
+/android/app/profile
+/android/app/release
+# Widget Preview 関連
+.widget_preview/
+
+# Node（Firebase ルールテスト）
+node_modules/
+functions/lib/
+firebase-debug.log
+database-debug.log
+
+# ローカルのビルドログ
+build_log_*.txt
+
+# テストレポート
+/test-report.json

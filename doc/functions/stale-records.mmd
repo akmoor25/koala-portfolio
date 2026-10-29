@@ -1,0 +1,10 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  participant Fn as onMembersChange
+  participant DB as Realtime Database
+  Note over Fn: 閉鎖の記録が 5 分より古いとき
+  Fn->>DB: leafletClosures/{lid} を読む<br>(1 時間前の stopped)
+  Fn->>DB: 古い記録を消す
+  Fn->>Fn: 停止ではなく、<br>自分で抜けたと判断し、<br>脱退として扱う
+  Note over Fn: イベントが 10 分より古いとき
+  Fn->>Fn: 何も読まず、stale-event で終了

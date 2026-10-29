@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  リリースビルドのリソースの縮小（R8）で、通知の文言を消さないための指定。
+  通知の文言は、サーバー（functions/src/payload.ts）が FCM の title_loc_key / body_loc_key で名前だけを送り、
+  受け取った端末の FCM SDK が、名前から文字列のリソースを探す。コードからは参照されないため、指定が無いと
+  縮小で取り除かれ、リリースビルドでは通知の本文が空になる。
+  https://developer.android.com/topic/performance/app-optimization/customize-which-resources-to-keep
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/notif_*" />

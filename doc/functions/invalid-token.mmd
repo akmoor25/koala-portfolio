@@ -1,0 +1,12 @@
+%%{init: { "fontFamily": "UDEV Gothic, Consolas, sans-serif" }}%%
+sequenceDiagram
+  participant Fn as onMembersChange
+  participant FCM as FCM
+  participant DB as Realtime Database
+  Fn->>FCM: sendEach
+  FCM-->>Fn: registration-token-not-registered
+  Fn->>DB: users/{uid}/fcmTokens<br>の該当の子を消す
+  Note over Fn: 再試行はしない<br>(一時的な失敗ではない)
+  FCM-->>Fn: third-party-auth-error など、<br>想定外のコード
+  Fn->>Fn: warn のログ (コード、uid、<br>イベント ID。トークンは出さない)
+  Note over Fn: 再試行しても直らないので、<br>予約を failed にして終える

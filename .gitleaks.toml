@@ -1,0 +1,22 @@
+# gitleaks（秘密情報の検査）の設定。履歴の全体を検査する。
+# 例外は、すべて「秘密ではない」と確認したものだけ。理由を書く。
+[extend]
+useDefault = true
+
+[allowlist]
+description = "秘密ではないと確認した検出"
+# 検出した行そのものに対して、下の regexes を当てる。
+regexTarget = "line"
+paths = [
+  # Firebase のクライアント用の設定値。アプリに同梱して配る前提で、秘密ではない。
+  # アクセス制御はデータベースのルールで行う。
+  '''lib/firebase_options\.dart''',
+  '''android/app/google-services\.json''',
+  '''ios/Runner/GoogleService-Info\.plist''',
+  # CocoaPods が記録する各ライブラリのチェックサム（"firebase_auth: <hash>"）。秘密ではない。
+  '''ios/Podfile\.lock''',
+]
+regexes = [
+  # ルールのテストの、ダミーのキー（16 進数のハッシュの形を、繰り返しで作っているだけ）。
+  '''const KEY = "0123456789abcdef"\.repeat\(2\);''',
+]

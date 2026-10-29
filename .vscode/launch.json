@@ -1,0 +1,40 @@
+{
+  "version": "0.1.0",
+  "configurations": [
+    {
+      "name": "developmentDebug",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": ["--debug", "--flavor", "development"]
+    },
+    {
+      "name": "developmentProfile",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": ["--profile", "--flavor", "development"]
+    },
+    {
+      "name": "productionRelease",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": ["--release", "--flavor", "production"]
+    },
+    {
+      "name": "iOS Debug",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": ["--debug"]
+    },
+    {
+      "name": "iOS Release",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": ["--release"]
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "rules": {
+    "leafletMembers": {
+      "$leafletKey": {
+        ".read": "auth != null && root.child('leaflets').child($leafletKey).child('ownerUid').val() === auth.uid",
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && ((auth.uid === $uid && ((!data.exists() && newData.val() === true && !root.child('leaflets').child($leafletKey).exists() && !root.child('leafletMembers').child($leafletKey).exists()) || (!data.exists() && newData.isString() && root.child('leafletSecrets').child($leafletKey).exists() && newData.val() === root.child('leafletSecrets').child($leafletKey).val()) || (data.exists() && !newData.exists() && (data.val() !== true || !root.child('leaflets').child($leafletKey).exists())))) || (auth.uid !== $uid && !newData.exists() && root.child('leaflets').child($leafletKey).child('ownerUid').val() === auth.uid && newData.parent().parent().parent().child('leafletClosures').child($leafletKey).child('at').val() === now))",
+          ".validate": "newData.val() === true || (newData.isString() && newData.val().length === 64)"
+        }
+      }
+    },
+
+    "users": {
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && !newData.exists()",
+        "fcmTokens": {
+          "$tokenKey": {
+            ".write": "auth != null && auth.uid === $uid",
+            ".validate": "$tokenKey.matches(/^[0-9a-f]{32}$/) && newData.hasChildren(['token', 'at', 'platform'])",
+            "token": {
+              ".validate": "newData.isString() && newData.val().length >= 20 && newData.val().length <= 768"
+            },
+            "at": { ".validate": "newData.isNumber() && newData.val() <= now" },
+            "platform": {
+              ".validate": "newData.val() === 'android' || newData.val() === 'ios'"
+            },
+            "$other": { ".validate": false }
+          }
+        }
+      }
+    },
+
+    "leafletClosures": {
+      "$leafletKey": {
+        ".write": "auth != null && root.child('leaflets').child($leafletKey).child('ownerUid').val() === auth.uid",
+        ".validate": "newData.hasChildren(['kind', 'title', 'at'])",
+        "kind": {
+          ".validate": "newData.val() === 'deleted' || newData.val() === 'stopped'"
+        },
+        "title": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100"
+        },
+        "at": { ".validate": "newData.isNumber() && newData.val() === now" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "leafletSecrets": {
+      "$leafletKey": {
+        ".write": "auth != null && root.child('leaflets').child($leafletKey).child('ownerUid').val() === auth.uid",
+        ".validate": "newData.isString() && newData.val().length === 64"
+      }
+    },
+
+    "userLeaflets": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "$leafletKey": {
+          ".write": "auth != null && !newData.exists() && root.child('leaflets').child($leafletKey).child('ownerUid').val() === auth.uid",
+          ".validate": "newData.val() === true"
+        }
+      }
+    },
+
+    "leaflets": {
+      "$leafletKey": {
+        ".read": "auth != null && root.child('leafletMembers').child($leafletKey).child(auth.uid).exists()",
+        ".write": "auth != null && ((!data.exists() && newData.child('ownerUid').val() === auth.uid) || (data.exists() && root.child('leafletMembers').child($leafletKey).child(auth.uid).exists() && (newData.exists() || data.child('ownerUid').val() === auth.uid) && (data.child('shared').val() === newData.child('shared').val() || data.child('ownerUid').val() === auth.uid)))",
+        ".validate": "$leafletKey.matches(/^[0-9A-HJKMNP-TV-Z]{12}$/) && newData.hasChildren(['title', 'ownerUid']) && (data.exists() || newData.hasChild('createdAt'))",
+        "ownerUid": {
+          ".validate": "newData.isString() && (data.exists() ? newData.val() === data.val() : newData.val() === auth.uid)"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() : newData.val() <= now)"
+        },
+        "shared": { ".validate": "newData.isBoolean()" },
+        "title": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"
+        },
+        "imageUrl": {
+          ".validate": "newData.isString() && newData.val().length <= 2048"
+        },
+        "coverColor": { ".validate": "newData.isNumber()" },
+        "firstDate": { ".validate": "newData.isNumber()" },
+        "firstTimeZoneId": {
+          ".validate": "newData.isString() && newData.val().length <= 64 && newData.val().matches(/^[A-Za-z0-9_+\\/-]*$/)"
+        },
+        "lastTimeZoneId": {
+          ".validate": "newData.isString() && newData.val().length <= 64 && newData.val().matches(/^[A-Za-z0-9_+\\/-]*$/)"
+        },
+        "lastDate": {
+          ".validate": "newData.isNumber() && (!newData.parent().child('firstDate').exists() || newData.val() >= newData.parent().child('firstDate').val())"
+        },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "marks": {
+      "$leafletKey": {
+        ".read": "auth != null && root.child('leafletMembers').child($leafletKey).child(auth.uid).exists()",
+        ".write": "auth != null && root.child('leafletMembers').child($leafletKey).child(auth.uid).exists() && (root.child('leaflets').child($leafletKey).exists() || !newData.exists())",
+        ".indexOn": ["startDate"],
+        "$markKey": {
+          ".validate": "newData.hasChildren(['startDate', 'title'])",
+          "startDate": { ".validate": "newData.isNumber()" },
+          "endDate": {
+            ".validate": "newData.isNumber() && newData.val() >= newData.parent().child('startDate').val()"
+          },
+          "actIcon": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 12"
+          },
+          "isAbout": { ".validate": "newData.isBoolean()" },
+          "title": {
+            ".validate": "newData.isString() && newData.val().length <= 200"
+          },
+          "remark": {
+            ".validate": "newData.isString() && newData.val().length <= 2000"
+          },
+          "link": {
+            ".validate": "newData.isString() && newData.val().length <= 2048"
+          },
+          "timeZoneId": {
+            ".validate": "newData.isString() && newData.val().length <= 64 && newData.val().matches(/^[A-Za-z0-9_+\\/-]*$/)"
+          },
+          "endTimeZoneId": {
+            ".validate": "newData.isString() && newData.val().length <= 64 && newData.val().matches(/^[A-Za-z0-9_+\\/-]*$/)"
+          },
+          "$other": { ".validate": false }
+        }
+      }
+    },
+
+    "rich_notes": {
+      "$leafletKey": {
+        ".read": "auth != null && root.child('leafletMembers').child($leafletKey).child(auth.uid).exists()",
+        ".write": "auth != null && root.child('leafletMembers').child($leafletKey).child(auth.uid).exists() && (!newData.exists() || (root.child('leaflets').child($leafletKey).exists() && newData.child('schemaVersion').val() === 2 && newData.child('generation').val() !== data.child('generation').val()))",
+        ".validate": "newData.hasChildren(['schemaVersion', 'generation'])",
+        "schemaVersion": { ".validate": "newData.val() === 2" },
+        "generation": { ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_-]{1,80}$/)" },
+        "lines": {
+          ".validate": "newData.hasChildren()",
+          "$lineId": {
+            ".write": "auth != null && root.child('leafletMembers').child($leafletKey).child(auth.uid).exists() && root.child('leaflets').child($leafletKey).exists() && newData.exists() && newData.child('generation').val() === root.child('rich_notes').child($leafletKey).child('generation').val() && (!data.exists() || (newData.child('afterId').val() === data.child('afterId').val() && newData.child('order').val() === data.child('order').val() && (data.child('deleted').val() !== true || newData.child('deleted').val() === true)))",
+            ".validate": "$lineId.matches(/^[A-Za-z0-9_-]{1,80}$/) && newData.hasChildren(['generation', 'afterId', 'order', 'writeId', 'deleted']) && newData.child('generation').val() === newData.parent().parent().child('generation').val() && (newData.child('afterId').val() === '' || (newData.parent().child(newData.child('afterId').val()).exists() && newData.parent().child(newData.child('afterId').val()).child('order').val() < newData.child('order').val())) && (newData.child('deleted').val() === true ? !newData.hasChild('delta') : newData.hasChild('delta'))",
+            "generation": { ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_-]{1,80}$/)" },
+            "afterId": { ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[A-Za-z0-9_-]{1,80}$/))" },
+            "order": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 9007199254740991 && newData.val() % 1 === 0" },
+            "writeId": { ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_-]{1,80}$/)" },
+            "deleted": { ".validate": "newData.isBoolean()" },
+            "delta": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 20000" },
+            "$other": { ".validate": false }
+          }
+        },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "presence": {
+      "notes": {
+        "$leafletKey": {
+          ".read": "auth != null && root.child('leafletMembers').child($leafletKey).child(auth.uid).exists()",
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('leafletMembers').child($leafletKey).child(auth.uid).exists()",
+            ".validate": "newData.hasChildren(['at', 'name'])",
+            "at": { ".validate": "newData.isNumber() && newData.val() <= now" },
+            "name": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 2"
+            },
+            "index": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() % 1 === 0 && newData.val() <= 200000"
+            },
+            "generation": { ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_-]{1,80}$/)" },
+            "lineId": { ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_-]{1,80}$/)" },
+            "$other": { ".validate": false }
+          }
+        }
+      }
+    }
+  }
+}
